@@ -1339,6 +1339,36 @@ def collect_score(d, meta, seeds, seed, pool, cc, count, queries):
     log("다음: 비교 시트를 보고 다른 상품이면 project.json 에서 enabled=false -> ssm analyze")
 
 
+# ----------------------------------------------------------------- sheet (시드 후보 한눈에 보기)
+def cmd_sheet(args):
+    """found.json(후보 목록: rank, cover, comments, likes, collects, duration) -> 번호 붙은 커버 격자 이미지"""
+    from PIL import Image, ImageDraw, ImageOps
+    rows = load_json(args.json)
+    if not rows:
+        die("후보가 없습니다")
+    tw, th, cols = 300, 400, args.cols
+    cap_h = 70
+    n = len(rows)
+    grid = Image.new("RGB", (cols * tw, ((n + cols - 1) // cols) * (th + cap_h)), (20, 20, 20))
+    f_big = fit_font(resolve_font("Pretendard-Black.otf"), "00", 200, 64)
+    f_small = fit_font(resolve_font("Pretendard-Bold.otf"), "댓글 00000  저장 00000", tw - 16, 26, 14)
+    for i, r in enumerate(rows):
+        x, y = (i % cols) * tw, (i // cols) * (th + cap_h)
+        try:
+            im = ImageOps.fit(Image.open(r["cover"]).convert("RGB"), (tw, th))
+        except Exception:
+            im = Image.new("RGB", (tw, th), (60, 60, 60))
+        grid.paste(im, (x, y))
+        dr = ImageDraw.Draw(grid)
+        dr.text((x + 12, y + 6), str(r.get("rank", i + 1)), font=f_big, fill="#FFE600", stroke_width=5, stroke_fill="#000")
+        dr.text((x + 8, y + th + 6), f"댓글 {r.get('comments', 0)}  저장 {r.get('collects', 0)}",
+                font=f_small, fill="#FFFFFF")
+        dr.text((x + 8, y + th + 38), f"좋아요 {r.get('likes', 0)}  {r.get('duration', '?')}초",
+                font=f_small, fill="#BBBBBB")
+    grid.save(args.out, quality=90)
+    log(f"후보 시트: {args.out}")
+
+
 # ----------------------------------------------------------------- misc
 def cmd_frames(args):
     d = pdir(args.project)
@@ -1404,6 +1434,8 @@ def main():
     a.set_defaults(func=cmd_build)
     a = sp.add_parser("frames"); a.add_argument("project"); a.add_argument("src"); a.add_argument("times", nargs="+")
     a.set_defaults(func=cmd_frames)
+    a = sp.add_parser("sheet"); a.add_argument("json"); a.add_argument("out"); a.add_argument("--cols", type=int, default=4)
+    a.set_defaults(func=cmd_sheet)
     a = sp.add_parser("voices"); a.add_argument("--locale", default="ko-KR"); a.set_defaults(func=cmd_voices)
     a = sp.add_parser("doctor"); a.set_defaults(func=cmd_doctor)
     args = ap.parse_args()

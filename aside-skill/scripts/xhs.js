@@ -39,6 +39,8 @@ globalThis.xhs = {
           id: n.noteId, type: n.type, title: n.title || '', desc: n.desc || '',
           tags: (n.tagList || []).map((t) => t.name), duration: n.video?.capa?.duration,
           likes: n.interactInfo?.likedCount, comments: n.interactInfo?.commentCount,
+          collects: n.interactInfo?.collectedCount, shares: n.interactInfo?.shareCount,
+          cover: (n.imageList?.[0]?.urlDefault || n.imageList?.[0]?.url || ''), time: n.time,
           user: n.user?.nickname, url: location.href.split('#')[0], video: best,
         };
       } catch (e) {
@@ -97,6 +99,53 @@ globalThis.xhs = {
     return mp4;
   },
 
+  // "1.2万" / "3,456" / "10+" -> 숫자
+  num(v) {
+    if (v == null) return 0;
+    const s = String(v).replace(/,/g, '').trim();
+    const m = s.match(/([\d.]+)\s*(万|w|W|만)?/);
+    if (!m) return 0;
+    return Math.round(parseFloat(m[1]) * (m[2] ? 10000 : 1));
+  },
+
+  // 상품/분야로 시드 후보 찾기: 검색 -> 상세(길이·댓글·좋아요·저장) -> 필터 -> 점수순 + 커버 저장
+  // 점수 = 댓글*3 + 저장*2 + 좋아요 (댓글 많은 영상 = 구매 문의가 많은 영상)
+  async find(page, keywords, dir, { max = 12, check = 18, maxDuration = 90, minDuration = 6 } = {}) {
+    const hangul = /[\uac00-\ud7a3]/g;
+    const seen = new Set();
+    const pool = [];
+    for (const kw of keywords) {
+      for (const it of await this.search(page, kw, { limit: 20 })) {
+        if (!seen.has(it.id)) { seen.add(it.id); pool.push({ ...it, query: kw }); }
+      }
+    }
+    pool.sort((a, b) => this.num(b.likes) - this.num(a.likes));
+    await fs.mkdir(dir, { recursive: true });
+    const out = [];
+    for (const it of pool.slice(0, check)) {
+      const n = await this.note(page, it.url);
+      await sleep(800 + Math.random() * 1200);
+      if (n.error || n.type !== 'video' || !n.video) continue;
+      if (!(n.duration >= minDuration && n.duration <= maxDuration)) continue;
+      if (((n.title + n.desc).match(hangul) || []).length >= 2) continue;
+      const likes = this.num(n.likes), comments = this.num(n.comments), collects = this.num(n.collects);
+      const row = { id: n.id, url: n.url, title: n.title || (n.desc || '').replace(/\[话题\]/g, '').slice(0, 60),
+        tags: n.tags, duration: n.duration, likes, comments, collects, user: n.user, query: it.query,
+        score: comments * 3 + collects * 2 + likes, cover: '' };
+      if (n.cover) {
+        try {
+          const r = await fetch(n.cover.replace(/^http:/, 'https:'), { headers: { Referer: 'https://www.rednote.com/' } });
+          if (r.ok) { row.cover = path.join(dir, `${n.id}.jpg`); await fs.writeFile(row.cover, Buffer.from(await r.arrayBuffer())); }
+        } catch (e) { /* 커버 없이 진행 */ }
+      }
+      out.push(row);
+    }
+    out.sort((a, b) => b.score - a.score);
+    const top = out.slice(0, max).map((r, i) => ({ rank: i + 1, ...r }));
+    await fs.writeFile(path.join(dir, 'found.json'), JSON.stringify(top, null, 2), 'utf8');
+    return top;
+  },
+
   // 비슷한 원본 후보 모으기: 검색 -> 상세 확인(길이/한글/중복) -> pool 개 다운로드
   async collect(page, keywords, dir, { pool = 8, maxDuration = 90, minDuration = 6, exclude = [] } = {}) {
     const seen = new Set(exclude);
@@ -124,4 +173,27 @@ globalThis.xhs = {
     return picked;
   },
 };
-console.log('xhs helper loaded');
+// 쿠팡 판매 여부 확인 (파트너스용): 상위 상품의 이름·가격·리뷰 수·로켓·광고 여부
+globalThis.coupang = {
+  async check(page, query, { limit = 6 } = {}) {
+    await page.goto('https://www.coupang.com/np/search?q=' + encodeURIComponent(query), { waitUntil: 'domcontentloaded' });
+    await sleep(2500);
+    return await page.evaluate((limit) => {
+      const lis = [...document.querySelectorAll('li[class*=ProductUnit], li.search-product, #product-list > li, ul#productList li')];
+      return lis.slice(0, limit).map((li) => {
+        const t = li.innerText.replace(/\s+/g, ' ');
+        const a = li.querySelector('a[href*="/vp/products/"]');
+        const prices = [...t.matchAll(/([\d,]+)원/g)].map((m) => parseInt(m[1].replace(/,/g, ''), 10)).filter((p) => p >= 1000);
+        const rvs = [...t.matchAll(/\((\d[\d,]*)\)/g)].map((m) => parseInt(m[1].replace(/,/g, ''), 10));
+        return {
+          name: (li.querySelector('[class*=name], .name')?.innerText || t).trim().slice(0, 70),
+          price: prices.length ? prices[prices.length > 1 && /\d+%/.test(t) ? 1 : 0] : null,
+          reviews: rvs.length ? Math.max(...rvs) : 0,
+          rocket: /내일\(|오늘\(|로켓/.test(t), ad: /광고\s*$/.test(t),
+          url: a ? a.href.split('?')[0] : '',
+        };
+      });
+    }, limit);
+  },
+};
+console.log('xhs + coupang helper loaded');
