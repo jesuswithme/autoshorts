@@ -55,7 +55,8 @@ tones.md 의 6가지 결과 CTA 를 짧게 제시하고 ask_user_question 으로
 ### 5. 빌드 -> 확인 -> 전달
 `ssm.cmd build <프로젝트>` -> 결과 프레임 시트를 만들어 직접 확인:
 `ffmpeg -y -loglevel error -i output\final.mp4 -vf "fps=1/3.5,scale=240:426,tile=6x1" -frames:v 1 -update 1 analysis\final_sheet.jpg`
-- 사용자에게: 대본 전문, 설명글, 썸네일·프레임 시트 이미지(markdown), 결과 폴더 경로. 영상 파일은 세션 artifacts 폴더에 복사해 바로 재생 가능하게 한다.
+- **결과물 3개(final.mp4, thumbnail.jpg, description.txt)를 모두 세션 artifacts 폴더에 복사**한다 (파일명 앞에 프로젝트명, 예: `<프로젝트>_final.mp4`, `<프로젝트>_thumbnail.jpg`, `<프로젝트>_description.txt`). 영상만 복사하지 말 것.
+- 답변에는 대본 전문, 설명글 전문(복사해서 바로 쓰도록 코드블록), 썸네일 이미지와 프레임 시트(markdown 이미지), 결과 폴더 경로를 넣는다.
 - 수정 요청은 엔진 SKILL.md 의 "말로 수정하기" 표대로 부분 재빌드. "다른 버전" = `build --only video` (장면 무작위 재배치).
 
 ## 지킬 것
