@@ -1,0 +1,7 @@
+yt-dlp
+edge-tts>=7
+pillow
+opencv-python-headless
+numpy
+rapidocr>=3
+onnxruntime

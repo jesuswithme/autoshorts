@@ -1,0 +1,18 @@
+# 가상환경 / 캐시
+.venv/
+__pycache__/
+*.pyc
+
+# 작업물 (다운로드한 원본 영상, 결과물) - 저작권상 올리지 않음
+projects/
+
+# 개인 배경음악 / 설치 시 내려받는 폰트
+assets/bgm/*
+!assets/bgm/.gitkeep
+assets/fonts/*
+!assets/fonts/.gitkeep
+
+# 기타
+*.log
+.DS_Store
+Thumbs.db

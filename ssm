@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# macOS / Linux 실행기
+DIR="$(cd "$(dirname "$0")" && pwd)"
+unset PIP_PREFIX PYTHONHOME VIRTUAL_ENV
+export PYTHONUTF8=1
+exec "$DIR/.venv/bin/python" "$DIR/ssm.py" "$@"

@@ -1,0 +1,102 @@
+{
+  "tts": {
+    "engine": "edge",
+    "voice": "ko-KR-SunHiNeural",
+    "rate": "+12%",
+    "pitch": "+0Hz",
+    "gap": 0.12,
+    "trim_silence": true
+  },
+  "subtitle": {
+    "font": "Pretendard-ExtraBold.otf",
+    "font_size": 84,
+    "color": "#FFFFFF",
+    "highlight_color": "#FFE600",
+    "outline_color": "#000000",
+    "outline": 7,
+    "shadow": 0,
+    "margin_v": 560,
+    "max_chars": 13,
+    "pop": true,
+    "auto_cover": true,
+    "safe_bottom": 320,
+    "cover_bar": {"enabled": true, "color": "black", "opacity": 0.55}
+  },
+  "title_overlay": {
+    "enabled": true,
+    "font": "Pretendard-Black.otf",
+    "font_size": 92,
+    "color1": "#FFFFFF",
+    "color2": "#FFE600",
+    "stroke": 8,
+    "y": 230
+  },
+  "ad_label": {
+    "enabled": true,
+    "text": "광고",
+    "font": "Pretendard-Bold.otf",
+    "font_size": 40,
+    "position": "top-right",
+    "margin_x": 40,
+    "margin_y": 120
+  },
+  "thumbnail": {
+    "font": "Pretendard-Black.otf",
+    "font_size": 150,
+    "color1": "#FFFFFF",
+    "color2": "#FFE600",
+    "stroke": 12,
+    "y": 300,
+    "line_gap": 40,
+    "shade": 170,
+    "box": false,
+    "box_color": "#E60012",
+    "ad_label": true
+  },
+  "video": {
+    "min_seg": 1.0,
+    "max_seg": 2.6,
+    "skip_head": 0.3,
+    "zoom": 1.08,
+    "hflip": false,
+    "speed": 1.0,
+    "tail": 0.6,
+    "landscape": "crop45",
+    "shuffle": true
+  },
+  "audio": {
+    "bgm": true,
+    "bgm_volume": 0.10,
+    "sfx": true,
+    "sfx_default": "whoosh",
+    "sfx_volume": 0.45
+  },
+  "clean": {
+    "mode": "blur",
+    "max_source_sec": 40,
+    "ocr_step": 0.5,
+    "min_score": 0.6,
+    "pad": 14,
+    "blur_kernel": 61,
+    "max_box_height_ratio": 0.15,
+    "text_filter": "subtitle",
+    "min_cjk_chars": 3,
+    "min_width_ratio": 0.22
+  },
+  "collect": {
+    "count": 3,
+    "pool": 8,
+    "search_per_query": 15,
+    "min_duration": 6,
+    "max_duration": 90,
+    "w_text": 0.4,
+    "min_score": 0.2
+  },
+  "filter": {
+    "exclude_korean": true
+  },
+  "description": {
+    "link_prefix": "👉 제품 보러가기:",
+    "disclosure": "이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다."
+  }
+}
