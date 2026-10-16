@@ -1,4 +1,4 @@
-# 쇼핑쇼츠메이커 설치 스크립트 (Windows, PowerShell 7 / 5.1)
+# 오토 쇼핑 쇼츠 설치 스크립트 (Windows, PowerShell 7 / 5.1)
 # 사용: 폴더에서  powershell -ExecutionPolicy Bypass -File setup.ps1
 $ErrorActionPreference = "Stop"
 $HOME_DIR = Split-Path -Parent $MyInvocation.MyCommand.Path

@@ -1,4 +1,4 @@
-# autoshorts - 쇼핑쇼츠메이커
+# autoshorts - 오토 쇼핑 쇼츠
 
 상품 영상 링크 하나로 **쇼핑 쇼츠 완성본(영상 + 썸네일 + 설명글)** 을 만드는 Claude Code / Codex 스킬입니다.
 별도 API 키 없이 Claude Code 나 Codex 구독 안에서 돌아가고, 목소리는 무료 TTS(Microsoft Edge 음성)를 씁니다.

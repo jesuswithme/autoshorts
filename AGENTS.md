@@ -1,4 +1,4 @@
-# 쇼핑쇼츠메이커 작업 폴더
+# 오토 쇼핑 쇼츠 작업 폴더
 
 이 폴더에서 쇼핑 쇼츠를 만들 때는 `skill/SKILL.md` 의 절차를 그대로 따른다 (`__SSM_HOME__` = 이 저장소 폴더의 절대경로).
 - 엔진: Windows `ssm.cmd <명령>` / macOS·Linux `./ssm <명령>` (new / add / collect / analyze / clean / init-script / build / frames / voices / doctor)

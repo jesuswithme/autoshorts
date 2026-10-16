@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 쇼핑쇼츠메이커 설치 (macOS / Linux, 실험적 지원)
+# 오토 쇼핑 쇼츠 설치 (macOS / Linux, 실험적 지원)
 # 사용: bash setup.sh
 set -e
 HOME_DIR="$(cd "$(dirname "$0")" && pwd)"
